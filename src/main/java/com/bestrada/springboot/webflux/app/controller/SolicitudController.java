@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -109,6 +110,40 @@ public class SolicitudController {
                     		 "mensaje", "La solicitud con el ID " + solicitud.getCodigo() + " existe.",
                              "success", false
                  )))
+	        );
+	}
+	
+	@PutMapping("/{id}")
+	public Mono<ResponseEntity<Map<String, Object>>> actualizarSolicitud(
+	        @PathVariable("id") String id,
+	        @RequestBody Solicitud solicitud) {
+	    
+	    return service.findById(id)
+	        .flatMap(existingSolicitud -> {
+	        	
+	            existingSolicitud.setMarca(solicitud.getMarca());
+	            existingSolicitud.setNombreContacto(solicitud.getNombreContacto());
+	            existingSolicitud.setNumeroContacto(solicitud.getNumeroContacto());
+	            existingSolicitud.setTipoSolicitud(solicitud.getTipoSolicitud());
+
+	            return service.save(existingSolicitud)
+	                .map(updatedSolicitud -> {
+	                    Map<String, Object> response = new HashMap<>();
+	                    response.put("success", true);
+	                    response.put("errMsj", null);
+	                    response.put("id", updatedSolicitud.getId());
+	                    Map<String, Object> data = new HashMap<>();
+                        data.put("sMsj", "La solicitud se actualizó satisfactoriamente");
+                        response.put("data", data);
+	                    return ResponseEntity.ok().body(response);
+	                });
+	        })
+	        .defaultIfEmpty(
+	            ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                .body(new HashMap<>(Map.of(
+	                    "errMsj", "No se encontró la solicitud con ID " + id,
+	                    "success", false
+	                )))
 	        );
 	}
 	
