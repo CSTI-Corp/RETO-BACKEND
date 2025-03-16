@@ -21,9 +21,9 @@ public class ContactoSolicitudServiceImpl implements ContactoSolicitudService{
 	}
 
 	@Override
-	public Mono<ContactoSolicitud> findById(String id) {
-		Long idLong = Long.parseLong(id);
-		return dao.findById(idLong);
+	public Flux<ContactoSolicitud> getContactoBySolicitud(String solicitudId) {
+		Long idLong = Long.parseLong(solicitudId);
+		return dao.findBySolicitudId(idLong);
 	}
 
 	@Override

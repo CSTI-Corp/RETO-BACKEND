@@ -2,6 +2,7 @@ package com.bestrada.springboot.webflux.app.controller;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -43,14 +44,18 @@ public class SolicitudController {
     }
 
 	
-	@GetMapping()
-	public Mono<ResponseEntity<Flux<Solicitud>>> listar() {		
-		return Mono.just(
-				ResponseEntity.ok()
-				.contentType( MediaType.APPLICATION_JSON_UTF8 )
-				.body( service.findAll())
-		);
-	}
+    @GetMapping
+    public Mono<ResponseEntity<Map<String, Object>>> listar() {
+        return service.findAll()
+                .collectList()
+                .map(lista -> {
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("success", true);
+                    response.put("data", lista);
+                    response.put("errMsj", "");
+                    return ResponseEntity.ok().body(response);
+                });
+    }
 
 	@GetMapping("/{id}")
 	public Mono<ResponseEntity<Solicitud>> getSolicitudById(@PathVariable("id") String id) {
@@ -89,8 +94,11 @@ public class SolicitudController {
 	                    .map(saved -> {
 	                    	Map<String, Object> response = new HashMap<>();
 	                        response.put("success", true);
-	                        response.put("mensaje", "Solicitud creada exitosamente");
+	                        response.put("errMsj", null);
 	                        response.put("id", saved.getId());
+	                        Map<String, Object> data = new HashMap<>();
+	                        data.put("sMsj", "La solicitud se guardó satisfactoriamente");
+	                        response.put("data", data);
 	                        return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	                    });
 	            })
