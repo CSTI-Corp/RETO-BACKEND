@@ -2,7 +2,11 @@ package com.bestrada.springboot.webflux.app.models.documents;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -14,7 +18,8 @@ public class Solicitud {
     private String codigo;
     private String marca;
     private String tipoSolicitud;
-    private LocalDate fechaEnvio;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime fechaEnvio;
     private String numeroContacto;
     private String nombreContacto;
     
@@ -23,7 +28,7 @@ public class Solicitud {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Solicitud(String codigo, String marca, String tipoSolicitud, LocalDate fechaEnvio, String numeroContacto,
+	public Solicitud(String codigo, String marca, String tipoSolicitud, LocalDateTime fechaEnvio, String numeroContacto,
 			String nombreContacto, List<ContactoSolicitud> contactos) {
 		super();
 		this.codigo = codigo;
@@ -68,11 +73,11 @@ public class Solicitud {
 		this.tipoSolicitud = tipoSolicitud;
 	}
 
-	public LocalDate getFechaEnvio() {
+	public LocalDateTime getFechaEnvio() {
 		return fechaEnvio;
 	}
 
-	public void setFechaEnvio(LocalDate fechaEnvio) {
+	public void setFechaEnvio(LocalDateTime fechaEnvio) {
 		this.fechaEnvio = fechaEnvio;
 	}
 

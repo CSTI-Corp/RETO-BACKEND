@@ -1,7 +1,9 @@
 package com.bestrada.springboot.webflux.app.controller;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -29,6 +31,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping({"/api/contacto", "/api/contacto/"})
+@CrossOrigin(origins = "*")
 public class ContactoSolicitudController {
 	
 	private final ContactoSolicitudDAO contactoSolicitudDAO;
@@ -57,14 +60,15 @@ public class ContactoSolicitudController {
 	}
 
 	
-	@GetMapping("/{id}")
-	public Mono<ResponseEntity<ContactoSolicitud>> getSolicitudByCodigo(@PathVariable("id") String id) {
-		return service.findById(id).map( s -> ResponseEntity.ok()
-				.contentType( MediaType.APPLICATION_JSON_UTF8 )
-				.body(s))
-				.defaultIfEmpty( ResponseEntity.notFound().build()
-		);
+	@GetMapping("/solicitud/{solicitudId}")
+	public Mono<ResponseEntity<List<ContactoSolicitud>>> getContactoBySolicitud(@PathVariable("solicitudId") String solicitudId) {
+	    return service.getContactoBySolicitud(solicitudId)
+	            .collectList()
+	            .map(lista -> ResponseEntity.ok().body(lista.isEmpty() ? Collections.emptyList() : lista));
 	}
+
+
+	
 	
 	@PostMapping
 	public Mono<ResponseEntity<Map<String, Object>>> crear(@RequestBody ContactoSolicitud contactoSolicitud) {
@@ -76,8 +80,11 @@ public class ContactoSolicitudController {
 	            .map(saved -> {
 	                Map<String, Object> response = new HashMap<>();
 	                response.put("success", true);
-	                response.put("mensaje", "Contacto creado exitosamente");
+	                response.put("errMsj", null);
 	                response.put("id", saved.getId());
+	                Map<String, Object> data = new HashMap<>();
+                    data.put("sMsj", "El Con se guardó satisfactoriamente");
+                    response.put("data", data);
 	                return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	            })
 	        )

@@ -9,7 +9,7 @@ public interface ContactoSolicitudService {
 	
 	public Flux<ContactoSolicitud> findAll();
     
-	public Mono<ContactoSolicitud> findById(String id);
+	public Flux<ContactoSolicitud> getContactoBySolicitud(String solicitudId);
        
 	public Mono<ContactoSolicitud> save(ContactoSolicitud contactoSolicitud);
     
